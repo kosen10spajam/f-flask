@@ -1,10 +1,14 @@
+import sqlite3
 from flask import Flask
 from flask import request as req
 from manager import MapPlayerManager, GameMaster
 
+
 app = Flask(__name__)
 manager = MapPlayerManager()
 gm = GameMaster()
+_sql = sqlite3.connect('database.db', check_same_thread=False)
+sql = _sql.cursor()
 
 @app.route('/')
 def index():
@@ -18,6 +22,8 @@ def admin():
 def add():
     args = req.args
     name, pid = args.get('name'), args.get('pid')
+    sql.execute('INSERT INTO players (name) VALUES ("%s")' % name)
+    _sql.commit()
     if manager.add(name, pid):
         return 'OK'
     else:
@@ -53,4 +59,6 @@ def isready():
     return str(gm.is_ready())
 
 if __name__ == '__main__':
+    sql.execute('DROP TABLE IF EXISTS players')
+    sql.execute('CREATE TABLE players (pid integer primary key, name text)')
     app.run(host='0.0.0.0', port=80, debug=True)
