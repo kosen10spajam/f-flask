@@ -1,6 +1,6 @@
 import sqlite3
-from flask import Flask
-from flask import request as req
+import json
+from flask import Flask, request as req, jsonify
 from manager import MapPlayerManager, GameMaster
 
 
@@ -12,7 +12,7 @@ sql = _sql.cursor()
 
 @app.route('/')
 def index():
-    return 'SABAEval GAME!'
+    return jsonify({'msg': 'Hello Sonoba!'})
 
 @app.route('/admin')
 def admin():
