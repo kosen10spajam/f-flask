@@ -1,10 +1,12 @@
 import sqlite3
 import json
 from flask import Flask, request as req, jsonify
+from flask.ext.cors import CORS
 from manager import MapPlayerManager, GameMaster
 
 
 app = Flask(__name__)
+CORS(app)
 manager = MapPlayerManager()
 gm = GameMaster()
 _sql = sqlite3.connect('database.db', check_same_thread=False)
@@ -61,4 +63,4 @@ def isready():
 if __name__ == '__main__':
     sql.execute('DROP TABLE IF EXISTS players')
     sql.execute('CREATE TABLE players (pid integer primary key, name text)')
-    app.run(host='0.0.0.0', port=80, debug=True)
+    app.run()
