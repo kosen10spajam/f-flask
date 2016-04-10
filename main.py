@@ -1,25 +1,112 @@
+# -*- encoding: utf-8 -*-
+
 from __future__ import print_function, unicode_literals
 
-import sqlite3
-from flask import Flask, request as req, jsonify
+import os
+import psycopg2
+import urlparse
+from random import choice
+from flask import Flask, request, jsonify, json
 from flask.ext.cors import CORS
-
 
 app = Flask(__name__)
 CORS(app)
-_sql = sqlite3.connect('database.db', check_same_thread=False)
+
+urlparse.uses_netloc.append('postgres')
+if os.environ['USER'] == 'Takumi':
+    _sql = psycopg2.connect(database='sonoba')
+else:
+    url = urlparse.urlparse(os.environ['DATABASE_URL'])
+
+    _sql = psycopg2.connect(
+        database=url.path[1:],
+        user=url.username,
+        password=url.password,
+        host=url.hostname,
+        port=url.port
+    )
 sql = _sql.cursor()
+
+SUCCESS, FAIL = 'SUCCESS', 'FAIL'
+
 
 @app.route('/')
 def index():
     return jsonify({'msg': 'Hello Sonoba!'})
 
-@app.route('/admin')
-def admin():
-    return app.send_static_file('admin.html')
 
+@app.route('/rooms', methods=['GET'])
+def rooms():
+    sql.execute('SELECT * FROM rooms')
+    d = dict((k, v) for k, v in sql.fetchall())
+    return json_unicode(d)
+
+
+@app.route('/rooms/<int:room_id>', methods=['POST'])
+def login(room_id):
+    sql.execute('SELECT rid FROM rooms')
+    res = sql.fetchall()
+
+    if room_id not in res:
+        sql.execute('SELECT name FROM animals WHERE playing_room = 0')
+        animals = sql.fetchall()
+
+        if len(animals) <= 0:
+            return json_unicode({'status': FAIL, 'animal': ''})
+
+        animal = choice(animals)
+
+        # sql.execute('INSERT INTO playing_animals (name) VALUES (%s)' % (animal[0], animal[1]))
+        w = u"UPDATE animals SET playing_room = %d WHERE name = '%s'" % (room_id, animal[0].decode('utf-8'))
+        sql.execute(w)
+        _sql.commit()
+        return json_unicode({'status': SUCCESS, 'animal': animal[0]})
+    else:
+        return json_unicode({'status': FAIL, 'animal': ''})
+
+
+@app.route('/rooms/<int:room_id>/<user_id>', methods=['DELETE'])
+def logout(room_id, user_id):
+    sql.execute('SELECT name, playing_room FROM animals WHERE name = %s AND playing_room = %s' % (user_id, room_id))
+    res = sql.fetchall()
+
+    if len(res) <= 0:
+        return json_unicode({'status': FAIL})
+    else:
+        sql.execute(u"UPDATE animals SET playing_room = 0 WHERE name = '%s'" % user_id)
+        return json_unicode({'status': SUCCESS})
+
+
+@app.route('/rooms/<int:room_id>/<user_id>/is_alive', methods=['POST'])
+def is_alive(room_id, user_id):
+    if alive_check(room_id, user_id):
+        return json_unicode({'status': True})
+    else:
+        return json_unicode({'status': False})
+
+
+def json_unicode(obj):
+    return json.htmlsafe_dumps(obj).decode('unicode-escape')
+
+
+def alive_check(room_id, user_id):
+    return True
 
 if __name__ == '__main__':
-    sql.execute('DROP TABLE IF EXISTS players')
-    sql.execute('CREATE TABLE players (pid integer primary key, name text)')
-    app.run()
+    sql.execute('DROP TABLE IF EXISTS rooms')
+    sql.execute('DROP TABLE IF EXISTS animals')
+    sql.execute('DROP TABLE IF EXISTS playing_animals')
+    sql.execute('DROP TABLE IF EXISTS messages')
+    sql.execute('CREATE TABLE rooms (rid serial PRIMARY KEY, name text)')
+    sql.execute('CREATE TABLE animals (name text PRIMARY KEY, playing_room INTEGER)')
+    sql.execute('CREATE TABLE messages (mid serial PRIMARY KEY, time TIMESTAMP, message text)')
+
+    for l in ['山手線']:
+        sql.execute("INSERT INTO rooms (name) VALUES ('%s')" % l)
+
+    for a in ['いぬ', 'ねこ', 'くま', 'ペンギン']:
+        sql.execute("INSERT INTO animals (name, is_playing) VALUES ('%s', 0)" % a)
+
+    _sql.commit()
+
+    app.run(host='0.0.0.0', port=8080, debug=True)
