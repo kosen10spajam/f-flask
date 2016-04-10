@@ -85,8 +85,8 @@ def login(room_id):
 
         animal = choice(animals)
 
-        # w = u"UPDATE animals SET playing_room = %d WHERE name = '%s'" % (room_id, animal[0].decode('utf-8'))
-        #sql.execute(w)
+        w = "UPDATE animals SET playing_room = %d WHERE name = '%s'" % (room_id, animal[0])
+        sql.execute(w)
         _sql.commit()
         return json_unicode({'status': SUCCESS, 'animal': animal[0]})
     else:
