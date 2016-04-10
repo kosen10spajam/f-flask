@@ -42,7 +42,6 @@ sql = _sql.cursor()
 
 SUCCESS, FAIL = 'SUCCESS', 'FAIL'
 
-
 @app.route('/')
 def index():
     return jsonify({'msg': 'Hello Sonoba!', 'db_info': ''})
@@ -50,10 +49,8 @@ def index():
 
 @app.route('/rooms', methods=['GET'])
 def rooms():
-    sql = _sql.cursor()
     sql.execute('SELECT * FROM rooms')
     d = dict((k, v) for k, v in sql.fetchall())
-    sql.close()
     return json_unicode(d)
 
 
@@ -123,7 +120,6 @@ if __name__ == '__main__':
         sql.execute("INSERT INTO animals (name, playing_room) VALUES ('%s', 0)" % a)
 
     _sql.commit()
-    _sql.close()
 
 
     app.run(host='0.0.0.0', port=8080, debug=True)
