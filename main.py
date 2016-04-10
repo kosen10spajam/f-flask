@@ -108,7 +108,7 @@ def logout(room_id, user_id):
 
 @app.route('/rooms/<int:room_id>/messages', methods=['GET'])
 def message_get(room_id):
-    since = request.args.get('since')
+    since = int(request.args.get('since'))
 
     sql.execute('SELECT time, animal, message FROM messages WHERE time >= %d' % since)
     res = sql.fetchall()
