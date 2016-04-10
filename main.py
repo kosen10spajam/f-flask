@@ -73,6 +73,12 @@ def rooms():
 
 @app.route('/rooms/<int:room_id>', methods=['POST'])
 def login(room_id):
+    sql.execute('SELECT playing_room FROM animals')
+    res = sql.fetchall()
+    if all(x != '0' for x in [y[0] for y in res]):
+        sql.execute('UPDATE animals SET playing_room = 0')
+        _sql.commit()
+
     sql.execute('SELECT rid FROM rooms')
     res = sql.fetchall()
 
@@ -104,6 +110,13 @@ def logout(room_id, user_id):
         sql.execute("UPDATE animals SET playing_room = 0 WHERE name = '%s'" % user_id)
         _sql.commit()
         return json_unicode({'status': SUCCESS})
+
+
+@app.route('/reset_login')
+def reset_login():
+    sql.execute('UPDATE animals SET playing_room = 0')
+    _sql.commit()
+    return json_unicode({'status': SUCCESS})
 
 
 @app.route('/rooms/<int:room_id>/messages', methods=['GET'])
