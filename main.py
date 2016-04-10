@@ -121,7 +121,7 @@ def message_post(room_id):
     animal = request.values.get('animal')
     message = request.values.get('message')
 
-    sql.execute("INSERT INTO messages (time, animal, message) VALUES (CURRENT_TIMESTAMP, '%s', '%s')"
+    sql.execute("INSERT INTO messages (time, animal, message) VALUES (CAST(EXTRACT(epoch FROM CURRENT_TIMESTAMP) AS INTEGER), '%s', '%s')"
                 % (animal, message))
     _sql.commit()
     return json_unicode({'status': SUCCESS})
