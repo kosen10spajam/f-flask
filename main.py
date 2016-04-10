@@ -32,7 +32,7 @@ SUCCESS, FAIL = 'SUCCESS', 'FAIL'
 
 @app.route('/')
 def index():
-    return jsonify({'msg': 'Hello Sonoba!'})
+    return jsonify({'msg': 'Hello Sonoba!', 'db_url': url})
 
 
 @app.route('/rooms', methods=['GET'])
