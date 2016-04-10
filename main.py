@@ -13,7 +13,7 @@ app = Flask(__name__)
 CORS(app)
 
 urlparse.uses_netloc.append('postgres')
-if os.environ['USER'] == 'Takumi':
+if 'USER' in os.environ.keys():
     _sql = psycopg2.connect(database='sonoba')
 else:
     url = urlparse.urlparse(os.environ['DATABASE_URL'])
