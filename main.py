@@ -40,6 +40,22 @@ _sql = psycopg2.connect(
 )
 sql = _sql.cursor()
 
+sql.execute('DROP TABLE IF EXISTS rooms')
+sql.execute('DROP TABLE IF EXISTS animals')
+sql.execute('DROP TABLE IF EXISTS playing_animals')
+sql.execute('DROP TABLE IF EXISTS messages')
+sql.execute('CREATE TABLE rooms (rid serial PRIMARY KEY, name text)')
+sql.execute('CREATE TABLE animals (name text PRIMARY KEY, playing_room INTEGER)')
+sql.execute('CREATE TABLE messages (mid serial PRIMARY KEY, time TIMESTAMP, message text)')
+
+for l in ['山手線']:
+    sql.execute("INSERT INTO rooms (name) VALUES ('%s')" % l)
+
+for a in ['dog', 'cat', 'penguin', 'bear']:
+    sql.execute("INSERT INTO animals (name, playing_room) VALUES ('%s', 0)" % a)
+
+_sql.commit()
+
 SUCCESS, FAIL = 'SUCCESS', 'FAIL'
 
 @app.route('/')
@@ -106,21 +122,4 @@ def alive_check(room_id, user_id):
     return True
 
 if __name__ == '__main__':
-    sql.execute('DROP TABLE IF EXISTS rooms')
-    sql.execute('DROP TABLE IF EXISTS animals')
-    sql.execute('DROP TABLE IF EXISTS playing_animals')
-    sql.execute('DROP TABLE IF EXISTS messages')
-    sql.execute('CREATE TABLE rooms (rid serial PRIMARY KEY, name text)')
-    sql.execute('CREATE TABLE animals (name text PRIMARY KEY, playing_room INTEGER)')
-    sql.execute('CREATE TABLE messages (mid serial PRIMARY KEY, time TIMESTAMP, message text)')
-
-    for l in ['山手線']:
-        sql.execute("INSERT INTO rooms (name) VALUES ('%s')" % l)
-
-    for a in ['dog', 'cat', 'penguin', 'bear']:
-        sql.execute("INSERT INTO animals (name, playing_room) VALUES ('%s', 0)" % a)
-
-    _sql.commit()
-
-
     app.run(host='0.0.0.0', port=8080, debug=True)
