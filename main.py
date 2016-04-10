@@ -46,7 +46,7 @@ sql.execute('DROP TABLE IF EXISTS playing_animals')
 sql.execute('DROP TABLE IF EXISTS messages')
 sql.execute('CREATE TABLE rooms (rid serial PRIMARY KEY, name text)')
 sql.execute('CREATE TABLE animals (name text PRIMARY KEY, playing_room INTEGER)')
-sql.execute('CREATE TABLE messages (mid serial PRIMARY KEY, time TIMESTAMP, animal text, message text)')
+sql.execute('CREATE TABLE messages (mid serial PRIMARY KEY, time INTEGER, animal text, message text)')
 
 for l in ['山手線']:
     sql.execute("INSERT INTO rooms (name) VALUES ('%s')" % l)
