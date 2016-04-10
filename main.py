@@ -18,12 +18,21 @@ if 'USER' in os.environ.keys():
 else:
     url = urlparse.urlparse(os.environ['DATABASE_URL'])
 
+    '''
     _sql = psycopg2.connect(
         database=url.path[1:],
         user=url.username,
         password=url.password,
         host=url.hostname,
         port=url.port
+    )
+    '''
+    _sql = psycopg2.connect(
+        database='d3url0227u1a8j',
+        user='nxhmrfgqqiruum',
+        password='oBLYUOl567RIs-1DBy8W-5dC_o',
+        host='ec2-23-21-255-14.compute-1.amazonaws.com',
+        port='5432'
     )
 sql = _sql.cursor()
 
@@ -105,7 +114,7 @@ if __name__ == '__main__':
         sql.execute("INSERT INTO rooms (name) VALUES ('%s')" % l)
 
     for a in ['いぬ', 'ねこ', 'くま', 'ペンギン']:
-        sql.execute("INSERT INTO animals (name, is_playing) VALUES ('%s', 0)" % a)
+        sql.execute("INSERT INTO animals (name, playing_room) VALUES ('%s', 0)" % a)
 
     _sql.commit()
 
