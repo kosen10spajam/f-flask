@@ -120,7 +120,7 @@ def message_get(room_id):
 def message_post(room_id):
     animal = request.values.get('animal')
     message = request.values.get('message')
-    time = request.values.get('time')
+    time = int(request.values.get('time'))
 
     sql.execute("INSERT INTO messages (time, animal, message) VALUES (%d, '%s', '%s')" % (time, animal, message))
     _sql.commit()
