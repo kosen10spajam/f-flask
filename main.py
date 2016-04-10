@@ -118,8 +118,8 @@ def message_get(room_id):
 
 @app.route('/rooms/<int:room_id>/messages', methods=['POST'])
 def message_post(room_id):
-    animal = request.form.get('animal')
-    message = request.form.get('message')
+    animal = request.values.get('animal')
+    message = request.values.get('message')
 
     sql.execute("INSERT INTO messages (time, animal, message) VALUES (CURRENT_TIMESTAMP, '%s', '%s')"
                 % (animal, message))
