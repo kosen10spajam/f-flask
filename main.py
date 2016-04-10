@@ -3,14 +3,18 @@
 from __future__ import print_function, unicode_literals
 
 import os
+import sys
 import psycopg2
 import urlparse
+import logging
 from random import choice
 from flask import Flask, request, jsonify, json
 from flask.ext.cors import CORS
 
 app = Flask(__name__)
 CORS(app)
+app.logger.addHandler(logging.StreamHandler(sys.stdout))
+app.logger.setLevel(logging.ERROR)
 '''
 urlparse.uses_netloc.append('postgres')
 if 'USER' in os.environ.keys():
