@@ -51,6 +51,7 @@ def index():
 def rooms():
     sql.execute('SELECT * FROM rooms')
     d = dict((k, v) for k, v in sql.fetchall())
+    d = [{'id': lid, 'line': line} for lid, line in sql.fetchall()]
     return json_unicode(d)
 
 
@@ -68,9 +69,8 @@ def login(room_id):
 
         animal = choice(animals)
 
-        # sql.execute('INSERT INTO playing_animals (name) VALUES (%s)' % (animal[0], animal[1]))
-        w = u"UPDATE animals SET playing_room = %d WHERE name = '%s'" % (room_id, animal[0].decode('utf-8'))
-        sql.execute(w)
+        # w = u"UPDATE animals SET playing_room = %d WHERE name = '%s'" % (room_id, animal[0].decode('utf-8'))
+        #sql.execute(w)
         _sql.commit()
         return json_unicode({'status': SUCCESS, 'animal': animal[0]})
     else:
@@ -85,7 +85,8 @@ def logout(room_id, user_id):
     if len(res) <= 0:
         return json_unicode({'status': FAIL})
     else:
-        sql.execute(u"UPDATE animals SET playing_room = 0 WHERE name = '%s'" % user_id)
+        sql.execute("UPDATE animals SET playing_room = 0 WHERE name = '%s'" % user_id)
+        _sql.commit()
         return json_unicode({'status': SUCCESS})
 
 
@@ -116,7 +117,7 @@ if __name__ == '__main__':
     for l in ['山手線']:
         sql.execute("INSERT INTO rooms (name) VALUES ('%s')" % l)
 
-    for a in ['いぬ', 'ねこ', 'くま', 'ペンギン']:
+    for a in ['dog', 'cat', 'penguin', 'bear']:
         sql.execute("INSERT INTO animals (name, playing_room) VALUES ('%s', 0)" % a)
 
     _sql.commit()
