@@ -79,7 +79,7 @@ def login(room_id):
 
 @app.route('/rooms/<int:room_id>/<user_id>', methods=['DELETE'])
 def logout(room_id, user_id):
-    sql.execute('SELECT name, playing_room FROM animals WHERE name = %s AND playing_room = %s' % (user_id, room_id))
+    sql.execute("SELECT name, playing_room FROM animals WHERE name = '%s' AND playing_room = %s" % (user_id, room_id))
     res = sql.fetchall()
 
     if len(res) <= 0:
