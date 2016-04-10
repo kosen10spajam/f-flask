@@ -75,7 +75,7 @@ def rooms():
 def login(room_id):
     sql.execute('SELECT playing_room FROM animals')
     res = sql.fetchall()
-    if all(x != 0 for x in [y[0] for y in res]):
+    if all(int(x) != 0 for x in [y[0] for y in res]):
         sql.execute('UPDATE animals SET playing_room = 0')
         _sql.commit()
 
