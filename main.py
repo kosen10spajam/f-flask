@@ -46,7 +46,7 @@ sql.execute('DROP TABLE IF EXISTS playing_animals')
 sql.execute('DROP TABLE IF EXISTS messages')
 sql.execute('CREATE TABLE rooms (rid serial PRIMARY KEY, name text)')
 sql.execute('CREATE TABLE animals (name text PRIMARY KEY, playing_room INTEGER)')
-sql.execute('CREATE TABLE messages (mid serial PRIMARY KEY, time TIMESTAMP, message text)')
+sql.execute('CREATE TABLE messages (mid serial PRIMARY KEY, time TIMESTAMP, animal text, message text)')
 
 for l in ['山手線']:
     sql.execute("INSERT INTO rooms (name) VALUES ('%s')" % l)
@@ -104,6 +104,27 @@ def logout(room_id, user_id):
         sql.execute("UPDATE animals SET playing_room = 0 WHERE name = '%s'" % user_id)
         _sql.commit()
         return json_unicode({'status': SUCCESS})
+
+
+@app.route('/rooms/<int:room_id>/messages', methods=['GET'])
+def message_get(room_id):
+    since = request.args.get('room_id')
+
+    sql.execute('SELECT time, animal, message FROM messages WHERE time >= %d' % since)
+    res = sql.fetchall()
+    d = {'items': [{'time': time, 'animal': animal, 'message': message} for time, animal, message in res]}
+    return json_unicode(d)
+
+
+@app.route('/rooms/<int:room_id>/messages', methods=['POST'])
+def message_post(room_id):
+    animal = request.form.get('animal')
+    message = request.form.get('message')
+
+    sql.execute("INSERT INTO messages (time, animal, message) VALUES (CURRENT_TIMESTAMP, '%s', '%s')"
+                % (animal, message))
+    _sql.commit()
+    return json_unicode({'status': SUCCESS})
 
 
 @app.route('/rooms/<int:room_id>/<user_id>/is_alive', methods=['POST'])
