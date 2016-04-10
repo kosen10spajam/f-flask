@@ -122,7 +122,7 @@ def message_post(room_id):
     message = request.values.get('message')
     time = int(request.values.get('time'))
 
-    sql.execute("INSERT INTO messages (time, animal, message) VALUES (%d, '%s', '%s')" % (time, animal, message))
+    sql.execute("INSERT INTO messages (time, animal, message) VALUES (%d, '%s', $$%s$$)" % (time, animal, message))
     _sql.commit()
     return json_unicode({'status': SUCCESS})
 
