@@ -50,7 +50,7 @@ def index():
 @app.route('/rooms', methods=['GET'])
 def rooms():
     sql.execute('SELECT * FROM rooms')
-    d = dict((k, v) for k, v in sql.fetchall())
+    # d = dict((k, v) for k, v in sql.fetchall())
     d = [{'id': lid, 'line': line} for lid, line in sql.fetchall()]
     return json_unicode(d)
 
