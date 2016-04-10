@@ -11,14 +11,14 @@ from flask.ext.cors import CORS
 
 app = Flask(__name__)
 CORS(app)
-
+'''
 urlparse.uses_netloc.append('postgres')
 if 'USER' in os.environ.keys():
     _sql = psycopg2.connect(database='sonoba')
 else:
     url = urlparse.urlparse(os.environ['DATABASE_URL'])
 
-    '''
+
     _sql = psycopg2.connect(
         database=url.path[1:],
         user=url.username,
@@ -26,14 +26,14 @@ else:
         host=url.hostname,
         port=url.port
     )
-    '''
-    _sql = psycopg2.connect(
-        database='d3url0227u1a8j',
-        user='nxhmrfgqqiruum',
-        password='oBLYUOl567RIs-1DBy8W-5dC_o',
-        host='ec2-23-21-255-14.compute-1.amazonaws.com',
-        port='5432'
-    )
+'''
+_sql = psycopg2.connect(
+    database='d3url0227u1a8j',
+    user='nxhmrfgqqiruum',
+    password='oBLYUOl567RIs-1DBy8W-5dC_o',
+    host='ec2-23-21-255-14.compute-1.amazonaws.com',
+    port='5432'
+)
 sql = _sql.cursor()
 
 SUCCESS, FAIL = 'SUCCESS', 'FAIL'
@@ -41,7 +41,7 @@ SUCCESS, FAIL = 'SUCCESS', 'FAIL'
 
 @app.route('/')
 def index():
-    return jsonify({'msg': 'Hello Sonoba!', 'db_info': url.__dict__})
+    return jsonify({'msg': 'Hello Sonoba!', 'db_info': ''})
 
 
 @app.route('/rooms', methods=['GET'])
