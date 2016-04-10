@@ -119,6 +119,14 @@ def reset_login():
     return json_unicode({'status': SUCCESS})
 
 
+@app.route('/reset_message')
+def reset_message():
+    sql.execute('DROP TABLE IF EXISTS messages')
+    sql.execute('CREATE TABLE messages (mid serial PRIMARY KEY, time BIGINT, animal text, message text)')
+    _sql.commit()
+    return json_unicode({'status': SUCCESS})
+
+
 @app.route('/rooms/<int:room_id>/messages', methods=['GET'])
 def message_get(room_id):
     since = int(request.args.get('since'))
